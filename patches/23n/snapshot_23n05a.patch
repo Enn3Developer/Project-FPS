@@ -1,0 +1,348 @@
+Subject: [PATCH] snapshot 23n05a
+---
+Index: net/minecraft/client/Minecraft.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/Minecraft.java b/net/minecraft/client/Minecraft.java
+--- a/net/minecraft/client/Minecraft.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/Minecraft.java	(date 1675104168698)
+@@ -844,7 +844,7 @@
+ 
+             this.guiAchievement.updateAchievementWindow();
+             this.mcProfiler.startSection("root");
+-            Thread.yield();
++//            Thread.yield();
+ 
+             if (Keyboard.isKeyDown(65)) {
+                 Display.update();
+Index: net/minecraft/client/renderer/culling/ClippingHelper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/culling/ClippingHelper.java b/net/minecraft/client/renderer/culling/ClippingHelper.java
+--- a/net/minecraft/client/renderer/culling/ClippingHelper.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/culling/ClippingHelper.java	(date 1675112336144)
+@@ -16,15 +16,16 @@
+      */
+     public boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+         for (int i = 0; i < 6; ++i) {
+-            if ((double) this.frustum[i][0] * minX + (double) this.frustum[i][1] * minY + (double) this.frustum[i][2] * minZ + (double) this.frustum[i][3] <= 0.0D)
+-                if ((double) this.frustum[i][0] * maxX + (double) this.frustum[i][1] * minY + (double) this.frustum[i][2] * minZ + (double) this.frustum[i][3] <= 0.0D)
+-                    if ((double) this.frustum[i][0] * minX + (double) this.frustum[i][1] * maxY + (double) this.frustum[i][2] * minZ + (double) this.frustum[i][3] <= 0.0D)
+-                        if ((double) this.frustum[i][0] * maxX + (double) this.frustum[i][1] * maxY + (double) this.frustum[i][2] * minZ + (double) this.frustum[i][3] <= 0.0D)
+-                            if ((double) this.frustum[i][0] * minX + (double) this.frustum[i][1] * minY + (double) this.frustum[i][2] * maxZ + (double) this.frustum[i][3] <= 0.0D)
+-                                if ((double) this.frustum[i][0] * maxX + (double) this.frustum[i][1] * minY + (double) this.frustum[i][2] * maxZ + (double) this.frustum[i][3] <= 0.0D)
+-                                    if ((double) this.frustum[i][0] * minX + (double) this.frustum[i][1] * maxY + (double) this.frustum[i][2] * maxZ + (double) this.frustum[i][3] <= 0.0D)
+-                                        if ((double) this.frustum[i][0] * maxX + (double) this.frustum[i][1] * maxY + (double) this.frustum[i][2] * maxZ + (double) this.frustum[i][3] <= 0.0D)
+-                                            return false;
++            float minXf = (float) minX;
++            float minYf = (float) minY;
++            float minZf = (float) minZ;
++            float maxXf = (float) maxX;
++            float maxYf = (float) maxY;
++            float maxZf = (float) maxZ;
++
++            if (this.frustum[i][0] * minXf + this.frustum[i][1] * minYf + this.frustum[i][2] * minZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * maxXf + this.frustum[i][1] * minYf + this.frustum[i][2] * minZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * minXf + this.frustum[i][1] * maxYf + this.frustum[i][2] * minZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * maxXf + this.frustum[i][1] * maxYf + this.frustum[i][2] * minZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * minXf + this.frustum[i][1] * minYf + this.frustum[i][2] * maxZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * maxXf + this.frustum[i][1] * minYf + this.frustum[i][2] * maxZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * minXf + this.frustum[i][1] * maxYf + this.frustum[i][2] * maxZf + this.frustum[i][3] <= 0.0F && this.frustum[i][0] * maxXf + this.frustum[i][1] * maxYf + this.frustum[i][2] * maxZf + this.frustum[i][3] <= 0.0F) {
++                return false;
++            }
+         }
+ 
+         return true;
+Index: net/minecraft/client/renderer/EntityRenderer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/EntityRenderer.java b/net/minecraft/client/renderer/EntityRenderer.java
+--- a/net/minecraft/client/renderer/EntityRenderer.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/EntityRenderer.java	(date 1675181951106)
+@@ -48,7 +48,7 @@
+     /**
+      * A reference to the Minecraft object.
+      */
+-    private Minecraft mc;
++    private final Minecraft mc;
+     private float farPlaneDistance = 0.0F;
+     public ItemRenderer itemRenderer;
+ 
+@@ -64,25 +64,6 @@
+     private MouseFilter mouseFilterXAxis = new MouseFilter();
+     private MouseFilter mouseFilterYAxis = new MouseFilter();
+ 
+-    /**
+-     * Mouse filter dummy 1
+-     */
+-    private MouseFilter mouseFilterDummy1 = new MouseFilter();
+-
+-    /**
+-     * Mouse filter dummy 2
+-     */
+-    private MouseFilter mouseFilterDummy2 = new MouseFilter();
+-
+-    /**
+-     * Mouse filter dummy 3
+-     */
+-    private MouseFilter mouseFilterDummy3 = new MouseFilter();
+-
+-    /**
+-     * Mouse filter dummy 4
+-     */
+-    private MouseFilter mouseFilterDummy4 = new MouseFilter();
+     private float thirdPersonDistance = 4.0F;
+ 
+     /**
+Index: net/minecraft/client/renderer/RenderGlobal.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/RenderGlobal.java b/net/minecraft/client/renderer/RenderGlobal.java
+--- a/net/minecraft/client/renderer/RenderGlobal.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/RenderGlobal.java	(date 1675181680010)
+@@ -30,8 +30,6 @@
+ 
+ import java.nio.IntBuffer;
+ import java.util.*;
+-import java.util.concurrent.ConcurrentLinkedQueue;
+-import java.util.concurrent.atomic.AtomicInteger;
+ 
+ @SideOnly(Side.CLIENT)
+ public class RenderGlobal implements IWorldAccess {
+@@ -224,12 +222,9 @@
+     private final ThreadPool threadPoolTileEntities = new ThreadPool();
+ 
+     final BufferedQueue<Entity> entitiesToRender = new BufferedQueue<>();
+-    final AtomicInteger entityCounter = new AtomicInteger();
+ 
+     final BufferedQueue<TileEntity> tileEntitiesToRender = new BufferedQueue<>();
+-    final AtomicInteger tileEntityCounter = new AtomicInteger();
+ 
+-    private int teCullingPass = 0;
+     private int countTileEntitiesRendered;
+ 
+     public RenderGlobal(Minecraft par1Minecraft, RenderEngine par2RenderEngine) {
+@@ -480,10 +475,11 @@
+                 TileEntityRenderer.staticPlayerZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * (double) partialTickTime;
+                 this.countEntitiesTotal = var5.size();
+             }
++
+             this.mc.entityRenderer.enableLightmap(partialTickTime);
+             this.theWorld.theProfiler.endStartSection("global");
+             int i;
+-
++            
+             for (i = 0; i < this.theWorld.weatherEffects.size(); ++i) {
+                 Entity entity = (Entity) theWorld.weatherEffects.get(i);
+                 if (entity.shouldRenderInPass(pass) && entity.isInRangeToRenderVec3D(position)) {
+@@ -668,10 +664,6 @@
+ 
+         if (renderPass == 0) {
+             this.renderersLoaded = 0;
+-            /**
+-             * Dummy render int
+-             */
+-            int dummyRenderInt = 0;
+             this.renderersBeingClipped = 0;
+             this.renderersBeingOccluded = 0;
+             this.renderersBeingRendered = 0;
+Index: net/minecraft/client/renderer/GLAllocation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/GLAllocation.java b/net/minecraft/client/renderer/GLAllocation.java
+--- a/net/minecraft/client/renderer/GLAllocation.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/GLAllocation.java	(date 1675112674154)
+@@ -17,15 +17,15 @@
+ 
+ @SideOnly(Side.CLIENT)
+ public class GLAllocation {
+-    private static final Map field_74531_a = new HashMap();
+-    private static final List field_74530_b = new ArrayList();
++    private static final Map<Integer, Integer> mapDisplayList = new HashMap<>();
++    private static final List<Integer> listDummy = new ArrayList<>();
+ 
+     /**
+      * Generates the specified number of display lists and returns the first index.
+      */
+     public static synchronized int generateDisplayLists(int par0) {
+         int var1 = GL11.glGenLists(par0);
+-        field_74531_a.put(var1, par0);
++        mapDisplayList.put(var1, par0);
+         return var1;
+     }
+ 
+@@ -36,12 +36,12 @@
+         GL11.glGenTextures(par0IntBuffer);
+ 
+         for (int var1 = par0IntBuffer.position(); var1 < par0IntBuffer.limit(); ++var1) {
+-            field_74530_b.add(par0IntBuffer.get(var1));
++            listDummy.add(par0IntBuffer.get(var1));
+         }
+     }
+ 
+     public static synchronized void deleteDisplayLists(int par0) {
+-        GL11.glDeleteLists(par0, (Integer) field_74531_a.remove(par0));
++        GL11.glDeleteLists(par0, mapDisplayList.remove(par0));
+     }
+ 
+     /**
+@@ -49,18 +49,17 @@
+      */
+     public static synchronized void deleteTexturesAndDisplayLists() {
+ 
+-        for (Object value : field_74531_a.entrySet()) {
+-            Entry var1 = (Entry) value;
+-            GL11.glDeleteLists((Integer) var1.getKey(), (Integer) var1.getValue());
++        for (Entry<Integer, Integer> value : mapDisplayList.entrySet()) {
++            GL11.glDeleteLists(value.getKey(), value.getValue());
+         }
+ 
+-        field_74531_a.clear();
++        mapDisplayList.clear();
+ 
+-        for (Object o : field_74530_b) {
+-            GL11.glDeleteTextures((Integer) o);
++        for (Integer o : listDummy) {
++            GL11.glDeleteTextures(o);
+         }
+ 
+-        field_74530_b.clear();
++        listDummy.clear();
+     }
+ 
+     /**
+Index: net/minecraft/tileentity/TileEntity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/tileentity/TileEntity.java b/net/minecraft/tileentity/TileEntity.java
+--- a/net/minecraft/tileentity/TileEntity.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/tileentity/TileEntity.java	(date 1675112692582)
+@@ -191,7 +191,7 @@
+ 
+     @SideOnly(Side.CLIENT)
+     public double func_82115_m() {
+-        return 128.0D;
++        return 1024.0D;
+     }
+ 
+     /**
+Index: net/minecraft/client/renderer/RenderList.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/RenderList.java b/net/minecraft/client/renderer/RenderList.java
+--- a/net/minecraft/client/renderer/RenderList.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/RenderList.java	(date 1675102324701)
+@@ -2,24 +2,24 @@
+ 
+ import cpw.mods.fml.relauncher.Side;
+ import cpw.mods.fml.relauncher.SideOnly;
++
+ import java.nio.IntBuffer;
++
+ import org.lwjgl.opengl.GL11;
+ 
+ @SideOnly(Side.CLIENT)
+-public class RenderList
+-{
++public class RenderList {
+     private int field_78429_a;
+     private int field_78427_b;
+     private int field_78428_c;
+     private double field_78425_d;
+     private double field_78426_e;
+     private double field_78423_f;
+-    private IntBuffer field_78424_g = GLAllocation.createDirectIntBuffer(65536);
++    private final IntBuffer field_78424_g = GLAllocation.createDirectIntBuffer(65536);
+     private boolean field_78430_h = false;
+     private boolean field_78431_i = false;
+ 
+-    public void func_78422_a(int par1, int par2, int par3, double par4, double par6, double par8)
+-    {
++    public void func_78422_a(int par1, int par2, int par3, double par4, double par6, double par8) {
+         this.field_78430_h = true;
+         this.field_78424_g.clear();
+         this.field_78429_a = par1;
+@@ -30,43 +30,35 @@
+         this.field_78423_f = par8;
+     }
+ 
+-    public boolean func_78418_a(int par1, int par2, int par3)
+-    {
++    public boolean func_78418_a(int par1, int par2, int par3) {
+         return this.field_78430_h && par1 == this.field_78429_a && par2 == this.field_78427_b && par3 == this.field_78428_c;
+     }
+ 
+-    public void func_78420_a(int par1)
+-    {
++    public void func_78420_a(int par1) {
+         this.field_78424_g.put(par1);
+ 
+-        if (this.field_78424_g.remaining() == 0)
+-        {
++        if (this.field_78424_g.remaining() == 0) {
+             this.func_78419_a();
+         }
+     }
+ 
+-    public void func_78419_a()
+-    {
+-        if (this.field_78430_h)
+-        {
+-            if (!this.field_78431_i)
+-            {
++    public void func_78419_a() {
++        if (this.field_78430_h) {
++            if (!this.field_78431_i) {
+                 this.field_78424_g.flip();
+                 this.field_78431_i = true;
+             }
+ 
+-            if (this.field_78424_g.remaining() > 0)
+-            {
++            if (this.field_78424_g.remaining() > 0) {
+                 GL11.glPushMatrix();
+-                GL11.glTranslatef((float)((double)this.field_78429_a - this.field_78425_d), (float)((double)this.field_78427_b - this.field_78426_e), (float)((double)this.field_78428_c - this.field_78423_f));
++                GL11.glTranslatef((float) ((double) this.field_78429_a - this.field_78425_d), (float) ((double) this.field_78427_b - this.field_78426_e), (float) ((double) this.field_78428_c - this.field_78423_f));
+                 GL11.glCallLists(this.field_78424_g);
+                 GL11.glPopMatrix();
+             }
+         }
+     }
+ 
+-    public void func_78421_b()
+-    {
++    public void func_78421_b() {
+         this.field_78430_h = false;
+         this.field_78431_i = false;
+     }
+Index: net/minecraft/client/renderer/RenderBlocks.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/net/minecraft/client/renderer/RenderBlocks.java b/net/minecraft/client/renderer/RenderBlocks.java
+--- a/net/minecraft/client/renderer/RenderBlocks.java	(revision ca3e9c699b814fee0ba958fc141f33ccba444713)
++++ b/net/minecraft/client/renderer/RenderBlocks.java	(date 1675103227304)
+@@ -3937,10 +3937,10 @@
+     public boolean renderStandardBlockWithAmbientOcclusion(Block par1Block, int par2, int par3, int par4, float par5, float par6, float par7) {
+         this.enableAO = true;
+         boolean var8 = false;
+-        float var9 = this.lightValueOwn;
+-        float var10 = this.lightValueOwn;
+-        float var11 = this.lightValueOwn;
+-        float var12 = this.lightValueOwn;
++        float var9;
++        float var10;
++        float var11;
++        float var12;
+         boolean var13 = true;
+         boolean var14 = true;
+         boolean var15 = true;
